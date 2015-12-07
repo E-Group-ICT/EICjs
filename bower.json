@@ -1,0 +1,8 @@
+{
+    "name": "eicjs",
+    "description": "EIC code validation for JavaScript",
+    "version": "0.0.1",
+    "dependencies": {
+        "lodash": "~3.10.1"
+    }
+}
