@@ -44,10 +44,11 @@ var EIC = (function() {
      *  @return {character} A single character that is the check character for the given string.
      */
     calcCheckChar = function(str) {
-        var s = str.toLowerCase().split("");
+        var s = str.substring(0,15).toLowerCase().split("");
+        console.log(s)
         var c = _.sum(
             _.map(
-                _.map(str, mapping),
+                _.map(s, mapping),
                 weighting
             )
         );
