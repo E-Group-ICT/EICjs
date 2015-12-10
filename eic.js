@@ -27,8 +27,8 @@ var EIC = (function() {
      *  @return {boolean} True if the given string looks like an EIC code: has the correct length, format, etc.
      */
     var mayBeEIC = function(str) {
-        str = str.toLowerCase();
         if(str.length!=15 && str.length!=16) return false;
+        str = str.toLowerCase();
         for(var i=0, len=str.length; i<len; ++i) {
             if(!((str.charCodeAt(i)>=97 && str.charCodeAt(i)<=122) || (str.charCodeAt(i)>=48 && str.charCodeAt(i)<=57) || str[i] == '-')) return false;
         }
@@ -43,9 +43,8 @@ var EIC = (function() {
      *  @param  {string} str The examined string. Must be 15 or 16 characters long, and must be a well-formed EIC-string.
      *  @return {character} A single character that is the check character for the given string.
      */
-    calcCheckChar = function(str) {
+    var calcCheckChar = function(str) {
         var s = str.substring(0,15).toLowerCase().split("");
-        console.log(s)
         var c = _.sum(
             _.map(
                 _.map(s, mapping),
@@ -56,8 +55,13 @@ var EIC = (function() {
         return valueChars[(36 - ((c - 1)%37))];
     };
 
+    var isValid = function(str) {
+        return str.length == 16 && str[15] != calcCheckChar(str);
+    };
+
     return {
         "mayBeEIC": mayBeEIC,
-        "calcCheckChar": calcCheckChar
+        "calcCheckChar": calcCheckChar,
+        "isValid": isValid
     };
 })();
