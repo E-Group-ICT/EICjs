@@ -2,7 +2,11 @@
     "name": "eicjs",
     "description": "EIC code validation for JavaScript",
     "version": "0.0.1",
+    "private": false,
     "dependencies": {
         "lodash": "~3.10.1"
-    }
+    },
+    "main": [
+        "eic.js"
+    ]
 }
