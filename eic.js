@@ -55,8 +55,14 @@ var EIC = (function() {
         return valueChars[(36 - ((c - 1)%37))];
     };
 
+    /**
+     *  Check to see if a given EIC string is valid.
+     *
+     *  Returns true iff the given string is exactly 16 characters long, it's in the correct format, and the
+     *  check character checks out.
+     */
     var isValid = function(str) {
-        return str.length == 16 && str[15] != calcCheckChar(str);
+        return mayBeEIC(str) && str.length==16 && str[15] == calcCheckChar(str);
     };
 
     return {
