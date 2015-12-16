@@ -17,7 +17,16 @@ var EIC = (function() {
         return (16-index)*x;
     };
 
-    var types = ['x', 'y', 'z', 'v', 'w'];
+    // https://www.entsoe.eu/fileadmin/user_upload/edi/library/downloads/EIC_Reference_Manual_Release_5.pdf pp14-16
+    var types = {
+        'x': "PARTY",
+        'y': "AREA",
+        'z': "MEASUREMENT_POINT",
+        'v': "LOCATION",
+        'w': "RESOURCE",
+        't': "TIE_LINE",
+        'a': "SUBSTATION",
+    };
 
     /**
      *  Does given string look like an EIC code? This function returns true if given string may be an EIC coce:
@@ -32,7 +41,7 @@ var EIC = (function() {
         for(var i=0, len=str.length; i<len; ++i) {
             if(!((str.charCodeAt(i)>=97 && str.charCodeAt(i)<=122) || (str.charCodeAt(i)>=48 && str.charCodeAt(i)<=57) || str[i] == '-')) return false;
         }
-        if(!~types.indexOf(str[2])) return false;
+        if(!(str[2] in types)) return false;
         return true;
     };
 
@@ -65,9 +74,20 @@ var EIC = (function() {
         return mayBeEIC(str) && str.length==16 && str[15] == calcCheckChar(str);
     };
 
+    /**
+     *  Return the type of the object represented by a valid EIC code. The type may be "PARTY", "AREA", "MEASUREMENT_POINT", "LOCATION",
+     *  "RESOURCE", "TIE_LINE" or "SUBSTATION". For more information about these, see the
+     *  [Reference Manual](https://www.entsoe.eu/fileadmin/user_upload/edi/library/downloads/EIC_Reference_Manual_Release_5.pdf).
+     */
+    var getType = function(str) {
+        if(!mayBeEIC(str)) throw new Error("Invalid EIC code");
+        return types[str[2]];
+    }
+
     return {
         "mayBeEIC": mayBeEIC,
         "calcCheckChar": calcCheckChar,
-        "isValid": isValid
+        "isValid": isValid,
+        "getType": getType
     };
 })();
