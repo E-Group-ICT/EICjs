@@ -71,7 +71,10 @@ var EIC = (function() {
      *  check character checks out.
      */
     var isValid = function(str) {
-        return mayBeEIC(str) && str.length==16 && str[15] == calcCheckChar(str);
+        if(!mayBeEIC(str) || str.length!=16) return false;
+
+        var cc = calcCheckChar(str);
+        return str[15] == cc && cc!="-";
     };
 
     /**
