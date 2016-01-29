@@ -3,6 +3,11 @@
     <meta charset="utf-8">
     <title>ENTSO-E EIC code validator</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.min.css" />
+    <!--[if lt IE 9]>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.ie.min.css" />
+    <![endif]-->
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -25,6 +30,12 @@
     <script type="text/javascript" src="eic.js"></script>
 </head>
 <body>
+    <div class="github-fork-ribbon-wrapper right">
+        <div class="github-fork-ribbon">
+            <a href="https://github.com/Botffy/EICjs">Fork me on GitHub</a>
+        </div>
+    </div>
+
     <div class="container page-header">
         <h1>EIC code validator</h1>
         <p class="lead">
@@ -45,7 +56,7 @@
         <form>
             <div class="form-group">
                 <div class="input-group" style="width: 16em">
-                    <input type="text" maxlength="15" class="form-control text-uppercase input-lg monospace" id="eic-fragment" value="21X-DE-C-A0A0A-"></input>
+                    <input type="text" maxlength="15" class="form-control text-uppercase input-lg monospace" id="eic-fragment" value=""></input>
                     <span class="text-uppercase monospace input-group-addon" id='eic-fragment-cc'>?</span>
                 </div>
             </div>
@@ -62,7 +73,7 @@
         <form>
             <div class="form-group">
                 <div class="input-group" style="width: 17em">
-                    <input type="text" maxlength="16" class="form-control text-uppercase input-lg monospace" id="eic" value="21X-DE-C-A0A0A-R"></input>
+                    <input type="text" maxlength="16" class="form-control text-uppercase input-lg monospace" id="eic" value=""></input>
                     <span class="input-group-addon"><i id='eic-validity' class='fa fa-times red'></i></span>
                 </div>
             </div>
@@ -92,7 +103,6 @@
             }
 
             var validity = EIC.examine(ident.val());
-            console.log(validity)
             if(validity.isValid) {
                 eic_validity.removeClass("fa-times").removeClass("red").addClass("fa-check").addClass("green");
                 eic_explain.text("Valid EIC code. The type of the entity is '" +validity.type+ "'")
