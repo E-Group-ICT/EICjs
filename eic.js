@@ -71,11 +71,37 @@ var EIC = (function() {
      *  check character checks out.
      */
     var isValid = function(str) {
-        if(!mayBeEIC(str) || str.length!=16) return false;
+        return examine(str).isValid;
+    };
+
+    /**
+     *  Returns the reason why given string is not a valid EIC coce, or null if the string is valid.
+     */
+    var examine = function(str) {
+        if(str.length < 16) return { isValid: false, errorMessage: "TOO_SHORT" };
+        if(str.length > 16) return { isValid: false, errorMessage: "TOO_LONG" };
+        str = str.toLowerCase();
+        for(var i=0, len=str.length; i<len; ++i) {
+            if(!((str.charCodeAt(i)>=97 && str.charCodeAt(i)<=122) || (str.charCodeAt(i)>=48 && str.charCodeAt(i)<=57) || str[i] == '-')) {
+                return { isValid: false, errorMessage: "INVALID_CHARACTER", errorParams: [str[i]] };
+            }
+        }
+        if(!(str[2] in types)) {
+            return { isValid: false, errorMessage: "UNKNOWN_TYPE", errorParams: [str[2]] };
+        }
 
         var cc = calcCheckChar(str);
-        return str[15] == cc && cc!="-";
+        if(str[15] != cc) {
+            return { isValid: false, errorMessage: "CHECKCHAR_MISMATCH", errorParams: [cc, str[15]] };
+        }
+
+        if(str[15] == '-') {
+            return { isValid: false, errorMessage: "CHECKCHAR_HYPHEN" };
+        }
+
+        return { isValid: true, type: getType(str) };
     };
+
 
     /**
      *  Return the type of the object represented by a valid EIC code. The type may be "PARTY", "AREA", "MEASUREMENT_POINT", "LOCATION",
@@ -85,12 +111,13 @@ var EIC = (function() {
     var getType = function(str) {
         if(!mayBeEIC(str)) throw new Error("Invalid EIC code");
         return types[str[2]];
-    }
+    };
 
     return {
         "mayBeEIC": mayBeEIC,
         "calcCheckChar": calcCheckChar,
         "isValid": isValid,
-        "getType": getType
+        "getType": getType,
+        "examine": examine
     };
 })();
