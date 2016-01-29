@@ -5,15 +5,24 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <style type="text/css">
+        .monospace {
+            font-family: Consolas, Lucida Console, monospace;
+        }
+        .green {
+            color: green;
+        }
+        .red {
+            color: red;
+        }
+    </style>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.0.1/lodash.min.js"></script>
     <script type="text/javascript" src="eic.js"></script>
-    <script type="text/javascript">
-
-    </script>
 </head>
 <body>
     <div class="container page-header">
@@ -27,18 +36,71 @@
 
 
     <div class='container'>
-        <h2>Calculate EIC validation character</h2>
+        <h2>Calculate</h2>
+
+        <p class='lead'>
+            Enter the first 15 characters of the identification to calculate the validation character.
+        </p>
+
         <form>
             <div class="form-group">
-                <label for='eic-fragment'>
-                        First 15 characters of the identifier:
-                </label>
-                <div class='input-group'>
-                    <input type="text" maxlength="15" class="form-control input-lg text-uppercase" id="eic-fragment">
-                    <div class="input-group-addon text-uppercase" id='eic-checkchar'>?</div>
+                <div class="input-group" style="width: 16em">
+                    <input type="text" maxlength="15" class="form-control text-uppercase input-lg monospace" id="eic-fragment" value="21X-DE-C-A0A0A-"></input>
+                    <span class="text-uppercase monospace input-group-addon" id='eic-fragment-cc'>?</span>
                 </div>
             </div>
         </form>
     </div>
+
+    <div class='container'>
+        <h2>Validate</h2>
+
+        <p class='lead'>
+            Enter an EIC string in the input box below to validate it.
+        </p>
+
+        <form>
+            <div class="form-group">
+                <div class="input-group" style="width: 17em">
+                    <input type="text" maxlength="16" class="form-control text-uppercase input-lg monospace" id="eic" value="21X-DE-C-A0A0A-R"></input>
+                    <span class="input-group-addon"><i id='eic-validity' class='fa fa-times red'></i></span>
+                </div>
+            </div>
+            <p id="eic-explain"></p>
+        </form>
+    </div>
+
+
+    <script type="text/javascript">
+        var fragment = $("#eic-fragment");
+        var fragment_cc = $("#eic-fragment-cc");
+        fragment.bind('input', function(ev) {
+            if(!EIC.mayBeEIC(fragment.val())) {
+                fragment_cc.text('?');
+            } else {
+                fragment_cc.text(EIC.calcCheckChar(fragment.val()));
+            }
+        });
+
+        var ident = $("#eic");
+        var eic_validity = $("#eic-validity");
+        var eic_explain = $("#eic-explain");
+        ident.bind('input', function() {
+            if(!ident.val()) {
+                eic_explain.text("");
+                return;
+            }
+
+            var validity = EIC.examine(ident.val());
+            console.log(validity)
+            if(validity.isValid) {
+                eic_validity.removeClass("fa-times").removeClass("red").addClass("fa-check").addClass("green");
+                eic_explain.text("Valid EIC code. The type of the entity is '" +validity.type+ "'")
+            } else {
+                eic_validity.removeClass("fa-check").removeClass("green").addClass("fa-times").addClass("red");
+                eic_explain.text("Invalid EIC code. Reason: " +validity.errorMessage+ " " + (validity.errorParams? validity.errorParams : ""))
+            }
+        });
+    </script>
 </body>
 </html>
