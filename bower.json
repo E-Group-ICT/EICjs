@@ -1,10 +1,10 @@
 {
     "name": "eicjs",
-    "description": "EIC code validation for JavaScript",
+    "description": "ENTSO-E EIC scheme calculation and validation in JavaScript",
     "version": "0.0.1",
     "private": false,
     "dependencies": {
-        "lodash": "~3.10.1"
+        "lodash": "latest"
     },
     "main": [
         "eic.js"
