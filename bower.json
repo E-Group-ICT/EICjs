@@ -1,7 +1,6 @@
 {
     "name": "eicjs",
     "description": "ENTSO-E EIC scheme calculation and validation in JavaScript",
-    "version": "0.0.1",
     "private": false,
     "dependencies": {
         "lodash": "latest"
