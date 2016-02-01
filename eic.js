@@ -28,6 +28,58 @@ var EIC = (function() {
         'a': "SUBSTATION",
     };
 
+    // https://www.entsoe.eu/data/energy-identification-codes-eic/eic-lio-websites/Pages/default.aspx
+    var issuers = {
+        "10": {"name": "ENTSOES", "country": "EU"},
+        "11": {"name": "BDEW", "country": "DE"},
+        "12": {"name": "Swissgrid", "country": "CH"},
+        "13": {"name": "A&B", "country": "AT"},
+        "14": {"name": "APCS", "country": "AT"},
+        "15": {"name": "Mavir", "country": "HU"},
+        "16": {"name": "REN", "country": "PT"},
+        "17": {"name": "RTE", "country": "FR"},
+        "18": {"name": "REE", "country": "ES"},
+        "19": {"name": "PSE S.A.", "country": "PL"},
+        "20": {"name": "CREOS", "country": "LU"},
+        "21": {"name": "ENTSO-G", "country": ""},
+        "22": {"name": "Elia", "country": "BE"},
+        "23": {"name": "EFET", "country": ""},
+        "24": {"name": "SEPS", "country": "SK"},
+        "25": {"name": "Gas Connect", "country": "AT"},
+        "26": {"name": "Terna", "country": "IT"},
+        "27": {"name": "CEPS", "country": "CZ"},
+        "28": {"name": "Eles", "country": "SI"},
+        "29": {"name": "IPTO", "country": "GR"},
+        "30": {"name": "Transelectrica", "country": "RO"},
+        "31": {"name": "HOPS", "country": "HR"},
+        "32": {"name": "ESO", "country": "AD"},
+        "33": {"name": "MEPSO", "country": "MK"},
+        "34": {"name": "EMS", "country": "RS"},
+        "35": {"name": "CGES", "country": "ME"},
+        "36": {"name": "NOS-BIH", "country": "BA"},
+        "37": {"name": "DVGW", "country": "DE"},
+        "38": {"name": "Elering", "country": "EE"},
+        "39": {"name": "FGSZ", "country": "HU"},
+        "40": {"name": "TEIAS", "country": "TR"},
+        "41": {"name": "LITGRID", "country": "UAB"},
+        "42": {"name": "EU-STREAM", "country": "SK"},
+        "43": {"name": "AUGSTSPRIEGUMA", "country": "LV"},
+        "44": {"name": "Fingrid Oyj", "country": "FI"},
+        "45": {"name": "Energinet", "country": "DK"},
+        "46": {"name": "SVK", "country": "SE"},
+        "47": {"name": "Eirgrid", "country": "IE"},
+        "48": {"name": "NationalGrid", "country": "UK"},
+        "49": {"name": "Tennet", "country": "NL"},
+        "50": {"name": "Statnett", "country": "NO"},
+        "51": {"name": "Plinovodi", "country": "SI"},
+        "52": {"name": "GTS", "country": "NL"},
+        "53": {"name": "GAZ-SYSTEM", "country": "PL"},
+        "54": {"name": "OST", "country": "AL"},
+        "55": {"name": "XOSERVE", "country": "UK"},
+        "56": {"name": "UKRTRANSGAZ", "country": "UA"},
+        "56": {"name": "FLUXYS", "country": "BE"}
+    }
+
     /**
      *  Does given string look like an EIC code? This function returns true if given string may be an EIC coce:
      *  it has the correct length and format; however, this function does not examine the check character.
@@ -42,6 +94,7 @@ var EIC = (function() {
             if(!((str.charCodeAt(i)>=97 && str.charCodeAt(i)<=122) || (str.charCodeAt(i)>=48 && str.charCodeAt(i)<=57) || str[i] == '-')) return false;
         }
         if(!(str[2] in types)) return false;
+        if(!(str.substr(0,2) in issuers)) return false;
         return true;
     };
 
@@ -90,6 +143,10 @@ var EIC = (function() {
             return { isValid: false, errorMessage: "UNKNOWN_TYPE", errorParams: [str[2]] };
         }
 
+        if(!(str.substring(0,2) in issuers)) {
+            return { isValid: false, errorMessage: "UNKNOWN ISSUER", errorParams: [str.substring(0,2)] };
+        }
+
         var cc = calcCheckChar(str);
         if(str[15] != cc) {
             return { isValid: false, errorMessage: "CHECKCHAR_MISMATCH", errorParams: [cc, str[15]] };
@@ -99,7 +156,7 @@ var EIC = (function() {
             return { isValid: false, errorMessage: "CHECKCHAR_HYPHEN" };
         }
 
-        return { isValid: true, type: getType(str) };
+        return { isValid: true, type: getType(str), issuer: getIssuer(str) };
     };
 
 
@@ -113,11 +170,17 @@ var EIC = (function() {
         return types[str[2]];
     };
 
+    var getIssuer = function(str) {
+        if(!mayBeEIC(str)) throw new Error("Invalid EIC code");
+        return issuers[str.substr(0, 2)];
+    }
+
     return {
         "mayBeEIC": mayBeEIC,
         "calcCheckChar": calcCheckChar,
         "isValid": isValid,
         "getType": getType,
+        "getIssuer": getIssuer,
         "examine": examine
     };
 })();
