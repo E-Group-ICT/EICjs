@@ -105,7 +105,9 @@
             var validity = EIC.examine(ident.val());
             if(validity.isValid) {
                 eic_validity.removeClass("fa-times").removeClass("red").addClass("fa-check").addClass("green");
-                eic_explain.text("Valid EIC code. The type of the entity is '" +validity.type+ "'")
+                eic_explain.text(
+                    "Valid EIC code. The type of the entity is '" +validity.type+ "', "+
+                    "the issuer is '"+validity.issuer.name+"' " +(validity.issuer.country? "("+validity.issuer.country+")" : '')) + "."
             } else {
                 eic_validity.removeClass("fa-check").removeClass("green").addClass("fa-times").addClass("red");
                 eic_explain.text("Invalid EIC code. Reason: " +validity.errorMessage+ " " + (validity.errorParams? validity.errorParams : ""))
