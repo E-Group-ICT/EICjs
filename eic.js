@@ -127,51 +127,60 @@ var EIC = (function() {
 
     /**
      *  Examine a string to see if it's a valid EIC code.
+     *
+     *  This resturns an object containing the possibly lists of errors and warnings concerning the given string, and also the issuer and type, if any.
      */
     var examine = function(str) {
-        var errors = [];
-        var warnings = [];
+        var result = {
+            isValid: true,
+            errors: [],
+            warnings: [],
+            issuer: undefined,
+            type: undefined
+        };
 
         if(str.length < 16) {
-            errors.push({ errorMessage: "TOO_SHORT" });
+            result.errors.push({ errorMessage: "TOO_SHORT" });
         }
         if(str.length > 16) {
-            errors.push({ errorMessage: "TOO_LONG" });
+            result.errors.push({ errorMessage: "TOO_LONG" });
         }
 
         str = str.toLowerCase();
         for(var i=0, len=str.length; i<len; ++i) {
             if(!((str.charCodeAt(i)>=97 && str.charCodeAt(i)<=122) || (str.charCodeAt(i)>=48 && str.charCodeAt(i)<=57) || str[i] == '-')) {
-                errors.push({ errorMessage: "INVALID_CHARACTER", errorParams: [i, str[i]] });
+                result.errors.push({ errorMessage: "INVALID_CHARACTER", errorParams: [i, str[i]] });
             }
         }
 
         // if we have an error by this time, we just throw away the pencil: no other check makes sense.
-        if(errors.length) {
-            return {
-                isValid: false,
-                errors: errors
-            };
+        if(result.errors.length) {
+            result.isValid = false;
+            return result;
         }
 
         var cc = calcCheckChar(str);
         if(str[15] != cc) {
-            errors.push({ errorMessage: "CHECKCHAR_MISMATCH", errorParams: [cc, str[15]] });
+            result.errors.push({ errorMessage: "CHECKCHAR_MISMATCH", errorParams: [cc, str[15]] });
         }
 
         if(str[15] == cc && cc == '-') {
-            errors.push({ errorMessage: "CHECKCHAR_HYPHEN" });
+            result.errors.push({ errorMessage: "CHECKCHAR_HYPHEN" });
         }
 
         if(!(str[2] in types)) {
-            warnings.push({ errorMessage: "UNKNOWN_TYPE", errorParams: str[2] });
+            result.warnings.push({ errorMessage: "UNKNOWN_TYPE", errorParams: str[2] });
         }
 
         if(!(str.substring(0,2) in issuers)) {
-            warnings.push({ errorMessage: "UNKNOWN ISSUER", errorParams: str.substring(0,2) });
+            result.warnings.push({ errorMessage: "UNKNOWN ISSUER", errorParams: str.substring(0,2) });
         }
 
-        return { isValid: errors.length === 0, type: getType(str), issuer: getIssuer(str), errors: errors, warnings: warnings };
+        result.issuer = getIssuer(str);
+        result.type = getType(str);
+        result.isValid = result.errors.length === 0;
+
+        return result;
     };
 
 
