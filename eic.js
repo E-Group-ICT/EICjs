@@ -93,8 +93,6 @@ var EIC = (function() {
         for(var i=0, len=str.length; i<len; ++i) {
             if(!((str.charCodeAt(i)>=97 && str.charCodeAt(i)<=122) || (str.charCodeAt(i)>=48 && str.charCodeAt(i)<=57) || str[i] == '-')) return false;
         }
-        if(!(str[2] in types)) return false;
-        if(!(str.substr(0,2) in issuers)) return false;
         return true;
     };
 
@@ -128,35 +126,52 @@ var EIC = (function() {
     };
 
     /**
-     *  Returns the reason why given string is not a valid EIC coce, or null if the string is valid.
+     *  Examine a string to see if it's a valid EIC code.
      */
     var examine = function(str) {
-        if(str.length < 16) return { isValid: false, errorMessage: "TOO_SHORT" };
-        if(str.length > 16) return { isValid: false, errorMessage: "TOO_LONG" };
+        var errors = [];
+        var warnings = [];
+
+        if(str.length < 16) {
+            errors.push({ errorMessage: "TOO_SHORT" });
+        }
+        if(str.length > 16) {
+            errors.push({ errorMessage: "TOO_LONG" });
+        }
+
         str = str.toLowerCase();
         for(var i=0, len=str.length; i<len; ++i) {
             if(!((str.charCodeAt(i)>=97 && str.charCodeAt(i)<=122) || (str.charCodeAt(i)>=48 && str.charCodeAt(i)<=57) || str[i] == '-')) {
-                return { isValid: false, errorMessage: "INVALID_CHARACTER", errorParams: [str[i]] };
+                errors.push({ errorMessage: "INVALID_CHARACTER", errorParams: [i, str[i]] });
             }
         }
-        if(!(str[2] in types)) {
-            return { isValid: false, errorMessage: "UNKNOWN_TYPE", errorParams: [str[2]] };
-        }
 
-        if(!(str.substring(0,2) in issuers)) {
-            return { isValid: false, errorMessage: "UNKNOWN ISSUER", errorParams: [str.substring(0,2)] };
+        // if we have an error by this time, we just throw away the pencil: no other check makes sense.
+        if(errors.length) {
+            return {
+                isValid: false,
+                errors: errors
+            };
         }
 
         var cc = calcCheckChar(str);
         if(str[15] != cc) {
-            return { isValid: false, errorMessage: "CHECKCHAR_MISMATCH", errorParams: [cc, str[15]] };
+            errors.push({ errorMessage: "CHECKCHAR_MISMATCH", errorParams: [cc, str[15]] });
         }
 
-        if(str[15] == '-') {
-            return { isValid: false, errorMessage: "CHECKCHAR_HYPHEN" };
+        if(str[15] == cc && cc == '-') {
+            errors.push({ errorMessage: "CHECKCHAR_HYPHEN" });
         }
 
-        return { isValid: true, type: getType(str), issuer: getIssuer(str) };
+        if(!(str[2] in types)) {
+            warnings.push({ errorMessage: "UNKNOWN_TYPE", errorParams: str[2] });
+        }
+
+        if(!(str.substring(0,2) in issuers)) {
+            warnings.push({ errorMessage: "UNKNOWN ISSUER", errorParams: str.substring(0,2) });
+        }
+
+        return { isValid: errors.length === 0, type: getType(str), issuer: getIssuer(str), errors: errors, warnings: warnings };
     };
 
 
@@ -166,14 +181,14 @@ var EIC = (function() {
      *  [Reference Manual](https://www.entsoe.eu/fileadmin/user_upload/edi/library/downloads/EIC_Reference_Manual_Release_5.pdf).
      */
     var getType = function(str) {
-        if(!mayBeEIC(str)) throw new Error("Invalid EIC code");
+        if(!mayBeEIC(str)) throw new Error("Malformed EIC code");
         return types[str[2]];
     };
 
     var getIssuer = function(str) {
-        if(!mayBeEIC(str)) throw new Error("Invalid EIC code");
+        if(!mayBeEIC(str)) throw new Error("Malformed EIC code");
         return issuers[str.substr(0, 2)];
-    }
+    };
 
     return {
         "mayBeEIC": mayBeEIC,
