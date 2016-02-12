@@ -76,9 +76,9 @@ var EIC = (function() {
         "53": {"name": "GAZ-SYSTEM", "country": "PL"},
         "54": {"name": "OST", "country": "AL"},
         "55": {"name": "XOSERVE", "country": "UK"},
-        "56": {"name": "UKRTRANSGAZ", "country": "UA"},
+        // "56": {"name": "UKRTRANSGAZ", "country": "UA"}, ????
         "56": {"name": "FLUXYS", "country": "BE"}
-    }
+    };
 
     /**
      *  Does given string look like an EIC code? This function returns true if given string may be an EIC coce:
