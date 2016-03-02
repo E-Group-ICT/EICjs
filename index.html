@@ -21,6 +21,19 @@
         .red {
             color: red;
         }
+
+        .eic-errors:empty, .eic-warnings:empty {
+            display: none;
+        }
+
+        .eic-errors::before {
+            content: "Errors: ";
+        }
+
+        .eic-warnings::before {
+            content: "Warnings: ";
+        }
+
     </style>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -70,16 +83,16 @@
             Enter an EIC string in the input box below to validate it.
         </p>
 
-        <form>
+        <form id='eic-validate-form'>
             <div class="form-group">
                 <div class="input-group" style="width: 17em">
                     <input type="text" maxlength="16" class="form-control text-uppercase input-lg monospace" id="eic" value=""></input>
                     <span class="input-group-addon"><i id='eic-validity' class='fa fa-fw fa-times red'></i></span>
                 </div>
             </div>
-            <p id="eic-explain"></p>
-            <ul id='eic-errors'></ul>
-            <ul id='eic-warnings'></ul>
+            <p class="eic-explain"></p>
+            <ul class='eic-errors'></ul>
+            <ul class='eic-warnings'></ul>
         </form>
     </div>
 
@@ -87,28 +100,44 @@
     <script type="text/javascript">
         var fragment = $("#eic-fragment");
         var fragment_cc = $("#eic-fragment-cc");
-        fragment.bind('input', function(ev) {
-            if(!EIC.mayBeEIC(fragment.val())) {
-                fragment_cc.text('?');
-            } else {
-                fragment_cc.text(EIC.calcCheckChar(fragment.val()));
-            }
-        });
 
         var ident = $("#eic");
         var eic_validity = $("#eic-validity");
-        var eic_explain = $("#eic-explain");
-        var eic_errors = $("#eic-errors");
-        var eic_warnings = $("#eic-warnings");
+
+        var eic_validate_form = {
+            form: $("#eic-validate-form"),
+            explanation: $("#eic-validate-form").find('.eic-explain').first(),
+            errors: $("#eic-validate-form").find('.eic-errors').first(),
+            warnings: $("#eic-validate-form").find('.eic-warnings').first()
+        }
 
         var warningClass = "fa-exclamation-triangle";
         var errorClass = "red fa-times";
         var validClass = "green fa-check";
         var toRemove = _.join([warningClass, errorClass, validClass], " ");
 
+        var explain = function(validity, form) {
+            if(validity.errors.length > 0) {
+                form.explanation.text("Invalid EIC code.");
+            } else if(validity.warnings.length > 0) {
+                form.explanation.text("Almost valid.");
+            } else {
+                form.explanation.text("Valid EIC code.");
+            }
+
+            form.errors.empty();
+            form.warnings.empty();
+            for(var i=0; i<validity.errors.length; ++i) {
+                form.errors.append($('<li>').text(validity.errors[i].errorMessage));
+            }
+            for(var i=0; i<validity.warnings.length; ++i) {
+                form.warnings.append($('<li>').text(validity.warnings[i].errorMessage));
+            }
+        };
+
         var validateEic = function() {
             if(!ident.val()) {
-                eic_explain.text("");
+                eic_validate_form.explanation.text("");
                 return;
             }
 
@@ -126,22 +155,18 @@
             }
             eic_validity.removeClass(toRemove).addClass(toAdd);
 
-            eic_errors.empty();
-            eic_warnings.empty();
-            if(validity.errors.length > 0) {
-                eic_explain.text("Invalid EIC code. Errors: ");
-                for(var i=0; i<validity.errors.length; ++i) {
-                    eic_errors.append($('<li>').text(validity.errors[i].errorMessage));
-                }
-            } else if(validity.warnings.length > 0) {
-                eic_explain.text("Almost valid. Potential problems: ");
-                for(var i=0; i<validity.warnings.length; ++i) {
-                    eic_warnings.append($('<li>').text(validity.warnings[i].errorMessage));
-                }
+            explain(validity, eic_validate_form);
+        };
+
+        var calcCheckChar = function(ev) {
+            if(!EIC.mayBeEIC(fragment.val())) {
+                fragment_cc.text('?');
             } else {
-                eic_explain.text("Valid EIC code.");
+                fragment_cc.text(EIC.calcCheckChar(fragment.val()));
             }
         };
+
+        fragment.bind('input', calcCheckChar);
         ident.bind('input', validateEic);
         validateEic();
     </script>
