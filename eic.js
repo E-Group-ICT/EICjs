@@ -76,8 +76,9 @@ var EIC = (function() {
         "53": {"name": "GAZ-SYSTEM", "country": "PL"},
         "54": {"name": "OST", "country": "AL"},
         "55": {"name": "XOSERVE", "country": "UK"},
-        // "56": {"name": "UKRTRANSGAZ", "country": "UA"}, ????
-        "56": {"name": "FLUXYS", "country": "BE"}
+        "56": {"name": "UKRTRANSGAZ", "country": "UA"},
+        "57": {"name": "FLUXYS", "country": "BE"},
+        "58": {"name": "BULGARTRANSGAZ", "country": "BG"}
     };
 
     /**
