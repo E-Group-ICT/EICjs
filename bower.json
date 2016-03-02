@@ -8,6 +8,7 @@
     "main": [
         "eic.js"
     ],
+    "moduleType": "globals",
     "keywords": [
         "EIC",
         "ENTSO-E",
