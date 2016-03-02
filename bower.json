@@ -3,10 +3,12 @@
     "description": "ENTSO-E EIC scheme calculation and validation in JavaScript",
     "private": false,
     "dependencies": {
-        "lodash": "latest"
+        "lodash": "latest",
+        "sprintf": "latest"
     },
     "main": [
-        "eic.js"
+        "eic.js",
+        "eic_locale.js"
     ],
     "moduleType": "globals",
     "keywords": [

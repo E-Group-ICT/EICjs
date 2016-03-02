@@ -209,5 +209,6 @@
         "examine": examine
     };
 
-    root.EIC = EIC;
+    if(!root.EIC) root.EIC = {};
+    _.merge(root.EIC, EIC);
 })(this);
