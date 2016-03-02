@@ -74,10 +74,12 @@
             <div class="form-group">
                 <div class="input-group" style="width: 17em">
                     <input type="text" maxlength="16" class="form-control text-uppercase input-lg monospace" id="eic" value=""></input>
-                    <span class="input-group-addon"><i id='eic-validity' class='fa fa-times red'></i></span>
+                    <span class="input-group-addon"><i id='eic-validity' class='fa fa-fw fa-times red'></i></span>
                 </div>
             </div>
             <p id="eic-explain"></p>
+            <ul id='eic-errors'></ul>
+            <ul id='eic-warnings'></ul>
         </form>
     </div>
 
@@ -96,23 +98,52 @@
         var ident = $("#eic");
         var eic_validity = $("#eic-validity");
         var eic_explain = $("#eic-explain");
-        ident.bind('input', function() {
+        var eic_errors = $("#eic-errors");
+        var eic_warnings = $("#eic-warnings");
+
+        var warningClass = "fa-exclamation-triangle";
+        var errorClass = "red fa-times";
+        var validClass = "green fa-check";
+        var toRemove = _.join([warningClass, errorClass, validClass], " ");
+
+        var validateEic = function() {
             if(!ident.val()) {
                 eic_explain.text("");
                 return;
             }
 
             var validity = EIC.examine(ident.val());
-            if(validity.isValid) {
-                eic_validity.removeClass("fa-times").removeClass("red").addClass("fa-check").addClass("green");
-                eic_explain.text(
-                    "Valid EIC code. The type of the entity is '" +validity.type+ "', "+
-                    "the issuer is '"+validity.issuer.name+"' " +(validity.issuer.country? "("+validity.issuer.country+")" : '')) + "."
-            } else {
-                eic_validity.removeClass("fa-check").removeClass("green").addClass("fa-times").addClass("red");
-                eic_explain.text("Invalid EIC code. Reason: " +validity.errorMessage+ " " + (validity.errorParams? validity.errorParams : ""))
+
+            var toAdd = undefined;
+            if(validity.warnings.length > 0) {
+                toAdd = warningClass;
             }
-        });
+            if(validity.errors.length > 0) {
+                toAdd = errorClass;
+            }
+            if(toAdd === undefined) {
+                toAdd = validClass;
+            }
+            eic_validity.removeClass(toRemove).addClass(toAdd);
+
+            eic_errors.empty();
+            eic_warnings.empty();
+            if(validity.errors.length > 0) {
+                eic_explain.text("Invalid EIC code. Errors: ");
+                for(var i=0; i<validity.errors.length; ++i) {
+                    eic_errors.append($('<li>').text(validity.errors[i].errorMessage));
+                }
+            } else if(validity.warnings.length > 0) {
+                eic_explain.text("Almost valid. Potential problems: ");
+                for(var i=0; i<validity.warnings.length; ++i) {
+                    eic_warnings.append($('<li>').text(validity.warnings[i].errorMessage));
+                }
+            } else {
+                eic_explain.text("Valid EIC code.");
+            }
+        };
+        ident.bind('input', validateEic);
+        validateEic();
     </script>
 </body>
 </html>
