@@ -138,6 +138,8 @@
         var validateEic = function() {
             if(!ident.val()) {
                 eic_validate_form.explanation.text("");
+                eic_validate_form.errors.empty();
+                eic_validate_form.warnings.empty();
                 return;
             }
 
@@ -166,8 +168,8 @@
             }
         };
 
-        fragment.bind('input', calcCheckChar);
-        ident.bind('input', validateEic);
+        fragment.bind('input propertychange', calcCheckChar);
+        ident.bind('input propertychange', validateEic);
         validateEic();
     </script>
 </body>
