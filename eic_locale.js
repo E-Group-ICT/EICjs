@@ -52,7 +52,7 @@
             return _locales[_locale].type[token] || token;
         },
         localizeError: function(error) {
-            return vsprintf(_locales[_locale].errors[error.errorMessage.toUpperCase()], error.errorParams);
+            return vsprintf(_locales[_locale].errors[error.errorMessage.toUpperCase()], error.errorParams || []);
         }
     };
 

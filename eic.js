@@ -170,11 +170,11 @@
         }
 
         if(!(str[2] in types)) {
-            result.warnings.push({ errorMessage: "UNKNOWN_TYPE", errorParams: str[2] });
+            result.warnings.push({ errorMessage: "UNKNOWN_TYPE", errorParams: [str[2]] });
         }
 
         if(!(str.substring(0,2) in issuers)) {
-            result.warnings.push({ errorMessage: "UNKNOWN ISSUER", errorParams: str.substring(0,2) });
+            result.warnings.push({ errorMessage: "UNKNOWN_ISSUER", errorParams: [str.substring(0,2)] });
         }
 
         result.issuer = getIssuer(str);
