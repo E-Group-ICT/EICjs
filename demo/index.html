@@ -124,7 +124,12 @@
             } else if(validity.warnings.length > 0) {
                 form.explanation.text("Almost valid.");
             } else {
-                form.explanation.text("Valid EIC code.");
+                form.explanation.text(sprintf(
+                    "Valid EIC code denoting a %s, issued by %s (%s)",
+                    EIC.localize(validity.type).toLowerCase(),
+                    validity.issuer.name,
+                    validity.issuer.country
+                ));
             }
 
             form.errors.empty();
@@ -146,7 +151,7 @@
             }
 
             var validity = EIC.examine(ident.val());
-            console.log(validity);
+
             var toAdd = undefined;
             if(validity.warnings.length > 0) {
                 toAdd = warningClass;
