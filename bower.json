@@ -10,6 +10,9 @@
         "eic.js",
         "eic_locale.js"
     ],
+    "ignore": [
+        "demo"
+    ],
     "moduleType": "globals",
     "keywords": [
         "EIC",
