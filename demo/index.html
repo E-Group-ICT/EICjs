@@ -40,7 +40,9 @@
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.0.1/lodash.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.3/sprintf.min.js"></script>
     <script type="text/javascript" src="../eic.js"></script>
+    <script type="text/javascript" src="../eic_locale.js"></script>
 </head>
 <body>
     <div class="github-fork-ribbon-wrapper right">
@@ -128,10 +130,10 @@
             form.errors.empty();
             form.warnings.empty();
             for(var i=0; i<validity.errors.length; ++i) {
-                form.errors.append($('<li>').text(validity.errors[i].errorMessage));
+                form.errors.append($('<li>').text(EIC.localizeError(validity.errors[i])));
             }
             for(var i=0; i<validity.warnings.length; ++i) {
-                form.warnings.append($('<li>').text(validity.warnings[i].errorMessage));
+                form.warnings.append($('<li>').text(EIC.localizeError(validity.warnings[i])));
             }
         };
 
@@ -144,7 +146,7 @@
             }
 
             var validity = EIC.examine(ident.val());
-
+            console.log(validity);
             var toAdd = undefined;
             if(validity.warnings.length > 0) {
                 toAdd = warningClass;
