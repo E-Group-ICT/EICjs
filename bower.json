@@ -11,7 +11,10 @@
         "eic_locale.js"
     ],
     "ignore": [
-        "demo"
+        "demo",
+        ".editorconfig",
+        ".gitignore",
+        "README.md"
     ],
     "moduleType": "globals",
     "keywords": [
