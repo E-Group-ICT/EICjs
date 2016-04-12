@@ -34,7 +34,7 @@
             errors: {
                 TOO_SHORT: "A megadott karaktersor túl rövid: az EIC pontosan 16 karakterből áll.",
                 TOO_LONG: "A megadott karaktersor túl hosszú: az EIC pontosan 16 karakterből áll.",
-                INVALID_CHARACTER: "A(z) %1$d. helyen álló karakter ('%2$d') érvénytelen. Az EIC kód csak az angol ábécé betűit, számokat, és kötőjelet tartalmazhat.",
+                INVALID_CHARACTER: "A(z) %1$d. helyen álló karakter ('%2$s') érvénytelen. Az EIC kód csak az angol ábécé betűit, számokat, és kötőjelet tartalmazhat.",
                 CHECKCHAR_MISMATCH: "Rossz ellenőrző karakter. '%2$s' helyett '%1$s' lenne a helyes.",
                 CHECKCHAR_HYPHEN: "Az ellenőrző karakter kötőjel. A kézikönyv azt javasolja, kerüljük az ilyen kódokat.",
                 UNKNOWN_TYPE: "Ismeretlen típuskód '%s'.",
